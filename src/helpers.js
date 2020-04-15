@@ -25,7 +25,8 @@ export function standardizeRgbSyntax(str) {
 
     const regex = new RegExp(/\d+/, "g");
     const array = str.match(regex);
-    if (array.length > 3) array.pop();
+    if (array.length > 3) array.splice(3, array.length - 3);
+
     return !str.includes("%")
       ? array
       : array.map((v) => Math.round((parseInt(v) / 100) * 255).toString());

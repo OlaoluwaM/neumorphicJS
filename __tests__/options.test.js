@@ -1,4 +1,4 @@
-import { defaults, deriveOptions } from "../index";
+import { defaults, deriveOptions } from "../src/index";
 
 describe("Option correctly rendered", () => {
   test("Blur works", () => {

@@ -1,5 +1,5 @@
 "use strict";
-import { standardizeRgbSyntax } from "../helpers";
+import { standardizeRgbSyntax } from "../src/helpers";
 
 describe("Standardize rgb syntax", () => {
   test("RGBA with %", () => {
@@ -26,7 +26,7 @@ describe("Standardize rgb syntax", () => {
     }).toThrowError(/\w/);
   });
 
-  test.only.each([
+  test.each([
     [null, "rgba(1,2,3,1)", true],
     [null, "rgba(100%, 20%, 50%, 0.5)", true],
     [null, "rgb(20,20,20)", true],
@@ -42,6 +42,7 @@ describe("Standardize rgb syntax", () => {
       /((rgb)a\((\d{1,3}%?,\s?){3}(1|0?\.\d+)\)|(rgb)\(\d{1,3}%?(,\s?\d{1,3}%?){2}\))/,
       "ig"
     );
+
     expect(!!b.match(rgbRegex)).toBe(expectation);
   });
 });
