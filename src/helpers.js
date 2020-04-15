@@ -21,7 +21,7 @@ const validRGBASyntax = [
 export function standardizeRgbSyntax(str) {
   try {
     if (typeof str !== "string") throw typeof str;
-    if (!str.includes("rgba") || str.includes("/")) throw 2;
+    if (!str.match(rgbRegex)) throw 2;
 
     const regex = new RegExp(/\d+/, "g");
     const array = str.match(regex);
@@ -37,7 +37,7 @@ export function standardizeRgbSyntax(str) {
       throw new TypeError(`Invalid type, should be a string not ${error}`);
     } else {
       throw new SyntaxError(
-        `${str} syntax nor supported, please use more common rgb syntax such as: ${validRGBASyntax.join(
+        `${str} syntax not supported, please use more common rgb/rgba syntax such as: ${validRGBASyntax.join(
           ", "
         )}`
       );
@@ -51,7 +51,7 @@ export function standardizeRgbSyntax(str) {
  */
 
 export function rgbaToHex(rgba) {
-  if (!!rgba.match(hexRegex)) {
+  if (rgba.match(hexRegex)) {
     const hex = rgba.replace("#", "");
     if (hex.length === 6) return hex;
     const result = hex.split("").map((v) => v.repeat(2));
@@ -65,7 +65,7 @@ export function rgbaToHex(rgba) {
     g = `${isSingle(1)}${parseInt(rgbArray[1]).toString(16)}`,
     b = `${isSingle(2)}${parseInt(rgbArray[2]).toString(16)}`;
 
-  return r + g + b;
+  return r.toLowerCase() + g.toLowerCase() + b.toLowerCase();
 }
 
 /**
