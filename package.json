@@ -1,0 +1,20 @@
+{
+  "name": "neumorphicjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watchAll"
+  },
+  "keywords": [],
+  "author": "Olaoluwa Mustapha <jomeemustapha@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@types/jest": "^25.2.1",
+    "jest": "^25.3.0"
+  },
+  "dependencies": {}
+}
