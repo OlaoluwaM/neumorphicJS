@@ -45,9 +45,6 @@ export function deriveOptions(userOptions) {
 export function colorDifference(color, step = 0) {
   try {
     if (Number.isInteger(step)) throw "Intensity value can only be a float";
-    if (step > 0.6 || step < -0.6) {
-      throw "Value of intensity property must be < 0.6 or > -0.6";
-    }
 
     if (step > 0.6 || step < -0.6) {
       throw "Value of intensity property must be < 0.6 or > -0.6";
