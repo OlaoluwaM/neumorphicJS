@@ -1,7 +1,6 @@
 "use strict";
 import { generateDistances, propertyChecker, rgbaToHex } from "./helpers";
 
-//max Intensity = 0.6, min = 0.01
 // add descriptions for functions
 
 const shapes = ["concave", "flat", "convex", "pressed"];
@@ -17,22 +16,23 @@ export const generalErrorMessage = "An error has occurred";
 export const defaults = {
   shape: "flat",
   color: "#55b9f3",
-  intensity: -0.15,
-  gradient: false,
+  intensity: 0.15,
   lightSource: "topLeft",
   blur: 60,
   distance: 20,
 };
 
+/**
+ * Derives the blur property from the value of the distance property;
+ * @param {{}} userOptions
+ */
 export function deriveOptions(userOptions) {
   let derivedObj;
   const { distance, blur } = userOptions;
   const { distance: dDistance, blur: dBlur } = defaults;
 
   if (distance !== dDistance && blur === dBlur) {
-    derivedObj = { blur: distance * 2 };
-  } else if (distance === dDistance && blur !== dBlur) {
-    derivedObj = { distance: blur / 2 };
+    derivedObj = { blur: Math.round(distance * 2) };
   } else {
     derivedObj = userOptions;
   }
@@ -40,10 +40,17 @@ export function deriveOptions(userOptions) {
   return { ...userOptions, ...derivedObj };
 }
 
-// negative step for lighter, positive step for darker
+/**
+ * Generates a shade of the specified 'color' that is lighter or darker depending on the 'step' value
+ * @param {string} color
+ * @param {number} step - negative for a darker shade, positive for a lighter shade
+ */
 export function colorDifference(color, step = 0) {
   try {
     if (Number.isInteger(step)) throw "Intensity value can only be a float";
+    if (step > 0.6 || step < -0.6) {
+      throw "Value of intensity property must be < 0.6 or > -0.6";
+    }
 
     const pattern = new RegExp(/[\d\w]{2}/, "g");
     const localColorValue = rgbaToHex(color);
@@ -65,10 +72,15 @@ export function colorDifference(color, step = 0) {
     return modifiedHex;
   } catch (e) {
     console.error(generalErrorMessage);
+    throw new TypeError(e);
   }
 }
 
-export function neumorph(optionObj) {
+/**
+ * Generates box-shadow property for neumorphism effect
+ * @param {{}} optionObj
+ */
+export function neumorph(optionObj = defaults) {
   const validOptionsObj = propertyChecker(optionObj, defaults);
   const userOptions = deriveOptions({
     ...defaults,
@@ -76,9 +88,9 @@ export function neumorph(optionObj) {
   });
   const { distance, color, shape, blur, intensity, lightSource } = userOptions;
   const distances = generateDistances(distance, lightSource);
-  const inset = shape === shapes[3] ? "inset" : "";
-  const lighterColor = colorDifference(color, -intensity);
-  const darkerColor = colorDifference(color, intensity);
+  const inset = shape === shapes[3] ? " inset" : "";
+  const darkerColor = colorDifference(color, -intensity);
+  const lighterColor = colorDifference(color, intensity);
   let gradient = "";
 
   if (shapes.includes(shape) && shape.includes("con")) {
@@ -87,14 +99,8 @@ export function neumorph(optionObj) {
     const color1 = colorDifference(color, isConcave ? 0.07 : -0.1);
     const color2 = colorDifference(color, isConcave ? -0.1 : 0.07);
 
-    gradient = `background: linear-gradient(${angle}, ${color1}, ${color2});`;
+    gradient = `background: linear-gradient(${angle}, ${color1}, ${color2}); `;
   }
 
-  return `
-  ${gradient}
-  box-shadow: ${inset} ${distances[0]}px ${distances[1]}px ${blur}px ${darkerColor},
-  ${inset} ${distances[2]}px ${distances[3]}px ${blur}px ${lighterColor};
-  `;
+  return `${gradient}box-shadow:${inset} ${distances[0]}px ${distances[1]}px ${blur}px ${darkerColor},${inset} ${distances[2]}px ${distances[3]}px ${blur}px ${lighterColor};`.trim();
 }
-
-// console.log(neumorph({ color: "#55b9f3", shape: "convex" }));
