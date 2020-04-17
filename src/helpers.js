@@ -90,11 +90,19 @@ export function generateDistances(dist, lightSource) {
 
     default:
       console.error(generalErrorMessage);
-      throw new Error(errorMessages[2]);
+      if (arguments.length < 2) {
+        throw new Error(
+          "There are meant to be two parameters for this function"
+        );
+      } else {
+        throw new TypeError(
+          `dist = ${dist}, lightSource = ${lightSource}. dist is meant to be a number and lightSource is meant to be a string`
+        );
+      }
   }
 }
 
-function typeChecker(optionObj) {
+function typeChecker(optionObj, defaults) {
   try {
     let invalidTypeIndex;
     Object.keys(optionObj).some(
@@ -102,37 +110,40 @@ function typeChecker(optionObj) {
         typeof defaults[key] !== typeof optionObj[key] &&
         (invalidTypeIndex = ind)
     );
-    if (invalidTypeIndex) {
+    if (invalidTypeIndex !== void 0) {
       const invalidProperty = Object.keys(optionObj)[invalidTypeIndex];
       const expectedType = typeof defaults[invalidProperty];
       const receivedType = typeof optionObj[invalidProperty];
       throw { invalidProperty, expectedType, receivedType };
     }
+    return optionObj;
   } catch (error) {
     const { invalidProperty, expectedType, receivedType } = error;
 
-    const errorMessage = `Received ${receivedType} for ${invalidProperty} instead of ${expectedType}`;
+    const errorMessage = `Received ${receivedType} for property ${invalidProperty} instead of ${expectedType}`;
 
     console.error(errorMessage);
-    throw new TypeError(errorMessage);
+    throw errorMessage;
   }
 }
-export function propertyChecker(options, defaults) {
+
+export function propertyChecker(optionsObj, defaults) {
+  debugger;
   try {
-    const optionsObj = typeChecker(options, defaults);
     let invalidPropertyIndex;
-    Object.keys(optionObj).some(
+    Object.keys(optionsObj).some(
       (key, ind) =>
         !defaults.hasOwnProperty(key) && (invalidPropertyIndex = ind)
     );
-    if (invalidPropertyIndex) {
-      const invalidProperty = Object.keys(optionObj)[invalidPropertyIndex];
-      throw invalidProperty;
+
+    if (invalidPropertyIndex !== void 0) {
+      const invalidProperty = Object.keys(optionsObj)[invalidPropertyIndex];
+      throw `${invalidProperty} is not a valid property`;
     } else {
-      return optionObj;
+      return typeChecker(optionsObj, defaults);
     }
   } catch (error) {
-    const errorMessage = `${error} is not a valid property`;
+    const errorMessage = error;
 
     console.error(errorMessage);
     throw new Error(errorMessage);

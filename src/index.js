@@ -17,7 +17,6 @@ export const generalErrorMessage = "An error has occurred";
 export const defaults = {
   shape: "flat",
   color: "#55b9f3",
-  size: 200,
   intensity: -0.15,
   gradient: false,
   lightSource: "topLeft",
@@ -27,21 +26,18 @@ export const defaults = {
 
 export function deriveOptions(userOptions) {
   let derivedObj;
-  const { distance, blur, size } = userOptions;
-  const { distance: dDistance, blur: dBlur, size: dSize } = defaults;
+  const { distance, blur } = userOptions;
+  const { distance: dDistance, blur: dBlur } = defaults;
 
-  if (size !== dSize && distance === dDistance && blur === dBlur) {
-    derivedObj = { distance: size * 0.1, blur: 0.2 * size };
-  } else if (size === dSize && distance !== dDistance && blur === dBlur) {
-    derivedObj = { size: distance / 0.1, blur: distance * 2 };
-  } else if (size === dSize && distance === dDistance && blur !== dBlur) {
-    derivedObj = { size: blur / 0.2, distance: blur / 2 };
+  if (distance !== dDistance && blur === dBlur) {
+    derivedObj = { blur: distance * 2 };
+  } else if (distance === dDistance && blur !== dBlur) {
+    derivedObj = { distance: blur / 2 };
   } else {
     derivedObj = userOptions;
   }
 
-  const result = { ...userOptions, ...derivedObj };
-  return result;
+  return { ...userOptions, ...derivedObj };
 }
 
 // negative step for lighter, positive step for darker
