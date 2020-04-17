@@ -56,7 +56,7 @@ describe("RGB to Hex", () => {
     expect(rgbaToHex("rgb(0,0,0)")).toBe("000000");
   });
 
-  test.only("it fails", () => {
+  test("it fails", () => {
     expect(() => {
       rgbaToHex(2222);
     }).toThrow();

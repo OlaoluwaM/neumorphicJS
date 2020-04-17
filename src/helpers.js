@@ -1,9 +1,5 @@
 "use strict";
 import { generalErrorMessage } from "./index";
-/**
- * Converts other variants of rgb/rgba syntax to the most common one 'rgba(r, g, b, a)'
- *
- */
 
 const rgbRegex = new RegExp(
   /((rgb)a\((\d{1,3}%?,\s?){3}(1|0?\.\d+)\)|(rgb)\(\d{1,3}%?(,\s?\d{1,3}%?){2}\))/,
@@ -18,6 +14,12 @@ const validRGBASyntax = [
   "rgb(r,g,b)",
   "rgb(r%, g%, b%)",
 ];
+
+/**
+ * Converts uncommon rgb/rgba syntax to more common rgb/rgba syntax, extracting the color values
+ * converting them into their hex equivalents
+ * @param {string} str
+ */
 export function standardizeRgbSyntax(str) {
   try {
     if (typeof str !== "string") throw typeof str;
@@ -25,6 +27,7 @@ export function standardizeRgbSyntax(str) {
 
     const regex = new RegExp(/\d+/, "g");
     const array = str.match(regex);
+
     if (array.length > 3) array.splice(3, array.length - 3);
 
     return !str.includes("%")
@@ -46,14 +49,15 @@ export function standardizeRgbSyntax(str) {
 }
 
 /**
- * Converts rgb/rgba strings to their hex equivalents without the #
+ * Converts rgb/rgba strings to their hex equivalents without the # (hashtag)
  * @param {string} rgba - rgb/rgba string
  */
-
 export function rgbaToHex(rgba) {
   if (rgba.match(hexRegex)) {
     const hex = rgba.replace("#", "");
+
     if (hex.length === 6) return hex;
+
     const result = hex.split("").map((v) => v.repeat(2));
     return result.join("");
   }
@@ -69,11 +73,10 @@ export function rgbaToHex(rgba) {
 }
 
 /**
- * Converts distance into box-shadow values in an array depending on light source
+ * Converts distance into an arry of X and Y box-shadow values, depending on light source specified
  * @param {number} dist - distance in number
  * @param {string} lightSource - light source
  */
-
 export function generateDistances(dist, lightSource) {
   switch (lightSource) {
     case "topLeft":
@@ -90,6 +93,7 @@ export function generateDistances(dist, lightSource) {
 
     default:
       console.error(generalErrorMessage);
+
       if (arguments.length < 2) {
         throw new Error(
           "There are meant to be two parameters for this function"
@@ -102,18 +106,26 @@ export function generateDistances(dist, lightSource) {
   }
 }
 
+/**
+ * Checks and validates the data types of user's options object properties
+ * @param {{}} optionObj
+ * @param {{}} defaults
+ */
 function typeChecker(optionObj, defaults) {
   try {
     let invalidTypeIndex;
+
     Object.keys(optionObj).some(
       (key, ind) =>
         typeof defaults[key] !== typeof optionObj[key] &&
         (invalidTypeIndex = ind)
     );
+
     if (invalidTypeIndex !== void 0) {
       const invalidProperty = Object.keys(optionObj)[invalidTypeIndex];
       const expectedType = typeof defaults[invalidProperty];
       const receivedType = typeof optionObj[invalidProperty];
+
       throw { invalidProperty, expectedType, receivedType };
     }
     return optionObj;
@@ -127,10 +139,15 @@ function typeChecker(optionObj, defaults) {
   }
 }
 
+/**
+ * Checks and validates the properties on the user's options object
+ * @param {{}} optionsObj
+ * @param {{}} defaults
+ */
 export function propertyChecker(optionsObj, defaults) {
-  debugger;
   try {
     let invalidPropertyIndex;
+
     Object.keys(optionsObj).some(
       (key, ind) =>
         !defaults.hasOwnProperty(key) && (invalidPropertyIndex = ind)
