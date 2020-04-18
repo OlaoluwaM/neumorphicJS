@@ -1,5 +1,4 @@
 "use strict";
-import { generalErrorMessage } from "./index";
 
 const rgbRegex = new RegExp(
   /((rgb)a\((\d{1,3}%?,\s?){3}(1|0?\.\d+)\)|(rgb)\(\d{1,3}%?(,\s?\d{1,3}%?){2}\))/,
@@ -34,8 +33,6 @@ export function standardizeRgbSyntax(str) {
       ? array
       : array.map((v) => Math.round((parseInt(v) / 100) * 255).toString());
   } catch (error) {
-    console.error(generalErrorMessage);
-
     if (typeof error === "string") {
       throw new TypeError(`Invalid type, should be a string not ${error}`);
     } else {
@@ -92,11 +89,9 @@ export function generateDistances(dist, lightSource) {
       return [dist, -dist, -dist, dist];
 
     default:
-      console.error(generalErrorMessage);
-
       if (arguments.length < 2) {
         throw new Error(
-          "There are meant to be two parameters for this function"
+          "There are meant to be two parameters for this function 'generateDistances'"
         );
       } else {
         throw new TypeError(
@@ -134,7 +129,6 @@ function typeChecker(optionObj, defaults) {
 
     const errorMessage = `Received ${receivedType} for property ${invalidProperty} instead of ${expectedType}`;
 
-    console.error(errorMessage);
     throw errorMessage;
   }
 }
@@ -162,7 +156,6 @@ export function propertyChecker(optionsObj, defaults) {
   } catch (error) {
     const errorMessage = error;
 
-    console.error(errorMessage);
     throw new Error(errorMessage);
   }
 }

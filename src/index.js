@@ -1,7 +1,5 @@
-"use strict";
 import { generateDistances, propertyChecker, rgbaToHex } from "./helpers";
 
-export const generalErrorMessage = "An error has occurred";
 const shapes = ["concave", "flat", "convex", "pressed"];
 
 const lightAngles = {
@@ -21,7 +19,7 @@ export const defaults = {
 
 /**
  * Derives the blur property from the value of the distance property;
- * @param {{}} userOptions
+ * @param {defaults} userOptions
  */
 export function deriveOptions(userOptions) {
   let derivedObj;
@@ -69,14 +67,13 @@ export function colorDifference(color, step = 0) {
 
     return modifiedHex;
   } catch (e) {
-    console.error(generalErrorMessage);
     throw new TypeError(e);
   }
 }
 
 /**
  * Generates box-shadow property for neumorphism effect
- * @param {{}} optionObj
+ * @param {defaults} optionObj
  */
 export function neumorph(optionObj = defaults) {
   const validOptionsObj = propertyChecker(optionObj, defaults);
@@ -89,7 +86,7 @@ export function neumorph(optionObj = defaults) {
   const distances = generateDistances(distance, lightSource);
 
   const inset = shape === shapes[3] ? " inset" : "";
-  let gradient = "";
+  let gradient = `background: ${color};`;
 
   const darkerColor = colorDifference(color, -intensity);
   const lighterColor = colorDifference(color, intensity);
@@ -101,8 +98,13 @@ export function neumorph(optionObj = defaults) {
     const color1 = colorDifference(color, isConcave ? 0.07 : -0.1);
     const color2 = colorDifference(color, isConcave ? -0.1 : 0.07);
 
-    gradient = `background: linear-gradient(${angle}, ${color1}, ${color2}); `;
+    gradient = `background: linear-gradient(${angle}, ${color1}, ${color2});`;
   }
 
-  return `${gradient}box-shadow:${inset} ${distances[0]}px ${distances[1]}px ${blur}px ${darkerColor},${inset} ${distances[2]}px ${distances[3]}px ${blur}px ${lighterColor};`.trim();
+  return [
+    gradient,
+    "\n",
+    `box-shadow:${inset} ${distances[0]}px ${distances[1]}px ${blur}px ${darkerColor},`,
+    `${inset} ${distances[2]}px ${distances[3]}px ${blur}px ${lighterColor};`,
+  ].join("");
 }
